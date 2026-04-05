@@ -37,3 +37,6 @@ Thumbs.db
 
 # -- DB ---
 db.sqlite3
+
+# -- file ---
+media

@@ -6,6 +6,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     user = serializers.IntegerField(source='id', read_only=True)
     created_at = serializers.DateTimeField(source='date_joined', read_only=True)
+    
 
     class Meta:
         model = CustomUser
@@ -32,5 +33,5 @@ class CustomerListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [
-            'user', 'username', 'first_name', 'last_name', 'file', 'type'
+            'user', 'username', 'first_name', 'last_name', 'file', 'uploaded_at', 'type'
         ]
