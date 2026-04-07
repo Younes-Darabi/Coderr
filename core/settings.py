@@ -43,11 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third-party packages
     'rest_framework',
     'rest_framework.authtoken',
     
+    # Filter
+    'django_filters',
+
     # Local apps (Created for this project)
     'user_auth',
     'user_profile',
@@ -143,7 +146,12 @@ REST_FRAMEWORK = {
     # Set default permission to require authentication for all API views
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+    ],
+    # Filter
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
     ]
+
 }
 
 AUTH_USER_MODEL = 'user_auth.CustomUser'

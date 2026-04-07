@@ -5,15 +5,32 @@ from ..models import Offer, OfferDetail
 
 class OfferDetailSerializer(serializers.ModelSerializer):
 
-    offer = serializers.PrimaryKeyRelatedField(read_only=True)
-
     class Meta:
         model = OfferDetail
-        fields = ['offer', 'title', 'revisions',
+        fields = ['title', 'revisions',
                   'delivery_time_in_days', 'price', 'features', 'offer_type']
 
 
-class OfferSerializer(serializers.ModelSerializer):
+class OfferDetailHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+
+    url = serializers.HyperlinkedIdentityField(view_name='offer-detail', read_only=True)
+
+    class Meta:
+        model = OfferDetail
+        fields = ['id', 'url']
+        
+
+class OfferGetSerializer(serializers.ModelSerializer):
+
+    user = serializers.IntegerField(source = 'creator_id', read_only = True)
+    details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details']
+    
+
+class OfferPostSerializer(serializers.ModelSerializer):
 
     details = OfferDetailSerializer(many=True, required=True)
 
@@ -22,8 +39,16 @@ class OfferSerializer(serializers.ModelSerializer):
         fields = ['title', 'image', 'description', 'details']
 
     def create(self, validated_data):
+
         details_data = validated_data.pop('details')
-        offer = Offer.objects.create(**validated_data)
+        user = self.context['request'].user
+        
+        offer = Offer.objects.create(creator=user, **validated_data)
+
         for detail_data in details_data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
+    
+
+class SingleOfferSerializer(serializers.ModelSerializer):
+    pass
