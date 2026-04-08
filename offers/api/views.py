@@ -4,8 +4,8 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ..models import Offer
-from .serializers import OfferGetSerializer, OfferPostSerializer, SingleOfferSerializer
-from .permissions import ISUserBusiness
+from .serializers import OfferGetSerializer, OfferPostSerializer, SingleGetOfferSerializer, SinglePatchOfferSerializer
+from .permissions import ISUserBusiness, IsOwner
 from .paginations import OfferPagination
 
 
@@ -15,7 +15,7 @@ class OfferView(generics.ListCreateAPIView):
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time']
-    filterset_fields = ['creator__id']
+    filterset_fields = ['creator_id']
     search_fields = ['title', 'description']
     # ordering_fields = ['updated_at', 'min_price']
     ordering_fields = ['updated_at']
@@ -33,8 +33,16 @@ class OfferView(generics.ListCreateAPIView):
         return OfferPostSerializer
     
 
-class SingleOfferView(generics.ListCreateAPIView):
+class SingleOfferView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Offer.objects.all()
-    serializer_class = SingleOfferSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [IsAuthenticated()]
+        return [IsAuthenticated(), IsOwner()]
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return SingleGetOfferSerializer
+        return SinglePatchOfferSerializer

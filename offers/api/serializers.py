@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from ..models import Offer, OfferDetail
 from user_auth.models import CustomUser
+from ..models import Offer, OfferDetail
 
 class OfferDetailSerializer(serializers.ModelSerializer):
 
@@ -13,11 +13,14 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
 class OfferDetailHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
 
-    url = serializers.HyperlinkedIdentityField(view_name='offer-detail', read_only=True)
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = OfferDetail
         fields = ['id', 'url']
+
+    def get_url(self, obj):
+        return f"/api/offers/{obj.id}/"
         
 
 class UserDetailsSerializer(serializers.ModelSerializer):
@@ -67,5 +70,36 @@ class OfferPostSerializer(serializers.ModelSerializer):
         return offer
     
 
-class SingleOfferSerializer(serializers.ModelSerializer):
-    pass
+class SingleGetOfferSerializer(serializers.ModelSerializer):
+    
+    user = serializers.IntegerField(source = 'creator_id', read_only = True)
+    details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
+    min_price = serializers.SerializerMethodField()
+    min_delivery_time = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time']
+    
+    def get_min_price(self, obj):
+        return min(obj.details.all().values_list('price', flat=True))
+
+    def get_min_delivery_time(self, obj):
+        return min(obj.details.all().values_list('delivery_time_in_days', flat=True))
+    
+
+class SingleOfferDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OfferDetail
+        fields = ['id', 'title', 'revisions',
+                  'delivery_time_in_days', 'price', 'features', 'offer_type']
+        
+
+class SinglePatchOfferSerializer(serializers.ModelSerializer):
+    
+    details = SingleOfferDetailSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'title', 'image', 'description','details']
