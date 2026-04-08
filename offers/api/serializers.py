@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from ..models import Offer, OfferDetail
-
+from user_auth.models import CustomUser
 
 class OfferDetailSerializer(serializers.ModelSerializer):
 
@@ -20,15 +20,32 @@ class OfferDetailHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'url']
         
 
+class UserDetailsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'username']
+
+
 class OfferGetSerializer(serializers.ModelSerializer):
 
     user = serializers.IntegerField(source = 'creator_id', read_only = True)
     details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
+    min_price = serializers.SerializerMethodField()
+    min_delivery_time = serializers.SerializerMethodField()
+    user_details = UserDetailsSerializer(source='creator',read_only = True)
 
     class Meta:
         model = Offer
-        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details']
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
     
+    def get_min_price(self, obj):
+        return min(obj.details.all().values_list('price', flat=True))
+
+    def get_min_delivery_time(self, obj):
+        return min(obj.details.all().values_list('delivery_time_in_days', flat=True))
+
+
 
 class OfferPostSerializer(serializers.ModelSerializer):
 
