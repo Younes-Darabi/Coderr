@@ -3,8 +3,8 @@ from rest_framework import filters
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from ..models import Offer
-from .serializers import OfferGetSerializer, OfferPostSerializer, SingleGetOfferSerializer, SinglePatchOfferSerializer
+from ..models import Offer, OfferDetail
+from .serializers import OfferGetSerializer, OfferPostSerializer, SingleGetOfferSerializer, SinglePatchOfferSerializer, SingleOfferDetailSerializer
 from .permissions import ISUserBusiness, IsOwner
 from .paginations import OfferPagination
 
@@ -46,3 +46,10 @@ class SingleOfferView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return SingleGetOfferSerializer
         return SinglePatchOfferSerializer
+    
+
+class OfferDetailsView(generics.RetrieveAPIView):
+
+    queryset = OfferDetail.objects.all()
+    serializer_class = SingleOfferDetailSerializer
+    permission_classes = [IsAuthenticated]
