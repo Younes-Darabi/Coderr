@@ -7,7 +7,7 @@ class IsCustomer(permissions.BasePermission):
         return request.user.is_authenticated and request.user.type == 'customer'
     
 
-# class IsBusiness(permissions.BasePermission):
+class IsBusiness(permissions.BasePermission):
 
-#     def has_permission(self, request, view):
-#         return request.user.type == 'business-user'
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.type == 'business-user'

@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.views import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 
 from offers.models import OfferDetail
 from ..models import Order
 from .serializers import OrderSerializer
-from .permissions import IsCustomer
+from .permissions import IsCustomer, IsBusiness
 
 class OrderView(generics.ListCreateAPIView):
 
@@ -38,3 +38,13 @@ class OrderView(generics.ListCreateAPIView):
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         
         return Response (serializer.errors,  status=status.HTTP_400_BAD_REQUEST)
+    
+class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'PATCH':
+            return [IsAuthenticated() , IsBusiness()]
+        return [IsAuthenticated(), IsAdminUser()]
