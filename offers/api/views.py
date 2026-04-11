@@ -1,3 +1,4 @@
+from django.db.models import Min, Max
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import generics
@@ -11,16 +12,28 @@ from .paginations import OfferPagination
 
 class OfferView(generics.ListCreateAPIView):
 
-    queryset = Offer.objects.all()
-
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    # filterset_fields = ['creator_id', 'min_price', 'max_delivery_time']
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['creator_id']
     search_fields = ['title', 'description']
     # ordering_fields = ['updated_at', 'min_price']
     ordering_fields = ['updated_at']
 
     pagination_class = OfferPagination
+
+    def get_queryset(self):
+        queryset = Offer.objects.all()
+        
+        min_price = self.request.query_params.get('min_price', None)
+        max_delivery_time = self.request.query_params.get('max_delivery_time', None)
+
+        if min_price is not None:
+            min_price = float(min_price)
+            queryset = queryset.filter(details__price__lte=min_price)
+
+        if max_delivery_time is not None:
+            max_delivery_time = int(max_delivery_time)
+            queryset = queryset.filter(details__delivery_time_in_days__lte=max_delivery_time)
+        return queryset
 
     def get_permissions(self):
         if self.request.method == 'GET':
