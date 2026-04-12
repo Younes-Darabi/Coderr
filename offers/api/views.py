@@ -33,6 +33,7 @@ class OfferView(generics.ListCreateAPIView):
         if max_delivery_time is not None:
             max_delivery_time = int(max_delivery_time)
             queryset = queryset.filter(details__delivery_time_in_days__lte=max_delivery_time)
+            
         return queryset
 
     def get_permissions(self):
