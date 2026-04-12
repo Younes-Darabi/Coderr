@@ -12,7 +12,8 @@ urlpatterns = [
     path('api/offerdetails/', include('offers.api.urls_offerdetails')),
     path('api/orders/', include('orders.api.urls')),
     path('api/order-count/', include('orders.api.urls_order-count')),
-    path('api/completed-order-count/', include('orders.api.urls_completed-order-count'))
+    path('api/completed-order-count/', include('orders.api.urls_completed-order-count')),
+    path('api/reviews/', include('reviews.api.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
