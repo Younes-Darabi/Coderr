@@ -45,7 +45,7 @@ class LoginView(ObtainAuthToken):
                     'username': user.username,
                     'email': user.email,
                     "user_id": user.pk
-                }, status=status.HTTP_201_CREATED)
+                }, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
