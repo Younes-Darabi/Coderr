@@ -94,201 +94,182 @@ class OfferTestBase(APITestCase):
             offer_type="basic"
         )
 
-# class OfferPostTest(OfferTestBase):
+class OfferPostTest(OfferTestBase):
 
-    # def setUp(self):
-    #     self.url = reverse('offer')
-    #     self.client.force_authenticate(user=self.business_user)
+    def setUp(self):
+        self.url = reverse('offer')
+        self.client.force_authenticate(user=self.business_user)
 
-    # def test_successful(self):
-    #     response = self.client.post(self.url, self.offer_data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_successful(self):
+        response = self.client.post(self.url, self.offer_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # def test_unsuccessful(self):
-    #     response = self.client.post(self.url, self.offer_data_error, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_unsuccessful(self):
+        response = self.client.post(self.url, self.offer_data_error, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # def test_not_authenticated(self):
-    #     self.client.force_authenticate(user=None)
-    #     response = self.client.post(self.url, self.offer_data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_not_authenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.post(self.url, self.offer_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # def test_not_business_user(self):
-    #     self.client.force_authenticate(user=self.customer_user)
-    #     response = self.client.post(self.url, self.offer_data, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-
-# class OfferGetTest(OfferTestBase):
-
-#     def setUp(self):
-#         self.url = reverse('offer')
-
-#     def test_successful(self):
-#         response = self.client.get(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-#     def test_successful_parameters(self):
-#         response = self.client.get(self.url, self.filter)
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-#     def test_unsuccessful_parameters(self):
-#         response = self.client.get(self.url, self.filter_error)
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_not_business_user(self):
+        self.client.force_authenticate(user=self.customer_user)
+        response = self.client.post(self.url, self.offer_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-# class OfferDetailGetTest(OfferTestBase):
+class OfferGetTest(OfferTestBase):
 
-#     def setUp(self):
-#         self.url = reverse('offer-detail', kwargs={'pk': 1})
-#         self.url_Error = reverse('offer-detail', kwargs={'pk': 2})
-#         self.client.force_authenticate(user=self.business_user)
+    def setUp(self):
+        self.url = reverse('offer')
 
-#     def test_successful(self):
-#         response = self.client.get(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_successful(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-#     def test_not_authenticated(self):
-#         self.client.force_authenticate(user=None)
-#         response = self.client.get(self.url, self.filter)
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_successful_parameters(self):
+        response = self.client.get(self.url, self.filter)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-#     def test_not_found(self):
-#         response = self.client.get(self.url_Error, self.filter_error)
-#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_unsuccessful_parameters(self):
+        response = self.client.get(self.url, self.filter_error)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
-# class OfferDetailPatchTest(OfferTestBase):
+class OfferDetailGetTest(OfferTestBase):
 
-#     def setUp(self):
-#         self.url = reverse('offer-detail', kwargs={'pk': 1})
-#         self.url_Error = reverse('offer-detail', kwargs={'pk': 2})
-#         self.client.force_authenticate(user=self.customer_user)
-#         self.data = {
-#             "title": "Updated Grafikdesign-Paket",
-#             "details": [
-#                 {
-#                     "title": "Basic Design Updated",
-#                     "revisions": 3,
-#                     "delivery_time_in_days": 6,
-#                     "price": 120,
-#                     "features": [
-#                         "Logo Design",
-#                         "Flyer"
-#                     ],
-#                     "offer_type": "basic"
-#                 }
-#             ]
-#         }
-#         self.data_error = {
-#             "title": None,
-#         }
+    def setUp(self):
+        self.url = reverse('offer-detail', kwargs={'pk': 1})
+        self.url_Error = reverse('offer-detail', kwargs={'pk': 2})
+        self.client.force_authenticate(user=self.business_user)
 
-#     def test_successful(self):
-#         response = self.client.patch(self.url, self.data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_successful(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-#     def test_unsuccessful(self):
-#         response = self.client.patch(self.url, self.data_error, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_not_authenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.url, self.filter)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-#     def test_not_authenticated(self):
-#         self.client.force_authenticate(user=None)
-#         response = self.client.patch(self.url, self.data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-#     def test_not_creator(self):
-#         self.client.force_authenticate(user=self.business_user)
-#         response = self.client.patch(self.url, self.data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-#     def test_not_found(self):
-#         response = self.client.patch(self.url_Error, self.data, format='json')
-#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_not_found(self):
+        response = self.client.get(self.url_Error, self.filter_error)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-# class OfferDetailDeleteTest(OfferTestBase):
+class OfferDetailPatchTest(OfferTestBase):
 
-#     def setUp(self):
-#         self.url = reverse('offer-detail', kwargs={'pk': 1})
-#         self.url_Error = reverse('offer-detail', kwargs={'pk': 2})
-#         self.client.force_authenticate(user=self.customer_user)
-#         self.data = {
-#             "title": "Updated Grafikdesign-Paket",
-#             "details": [
-#                 {
-#                     "title": "Basic Design Updated",
-#                     "revisions": 3,
-#                     "delivery_time_in_days": 6,
-#                     "price": 120,
-#                     "features": [
-#                         "Logo Design",
-#                         "Flyer"
-#                     ],
-#                     "offer_type": "basic"
-#                 }
-#             ]
-#         }
-#         self.data_error = {
-#             "title": None,
-#         }
+    def setUp(self):
+        self.url = reverse('offer-detail', kwargs={'pk': 1})
+        self.url_Error = reverse('offer-detail', kwargs={'pk': 10})
+        self.client.force_authenticate(user=self.customer_user)
+        self.data = {
+            "title": "Updated Grafikdesign-Paket",
+            "details": [
+                {
+                    "title": "Basic Design Updated",
+                    "revisions": 3,
+                    "delivery_time_in_days": 6,
+                    "price": 120,
+                    "features": [
+                        "Logo Design",
+                        "Flyer"
+                    ],
+                    "offer_type": "basic"
+                }
+            ]
+        }
+        self.data_error = {
+            "title": None,
+        }
 
-#     def test_successful(self):
-#         response = self.client.delete(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    def test_successful(self):
+        response = self.client.patch(self.url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-#     def test_not_authenticated(self):
-#         self.client.force_authenticate(user=None)
-#         response = self.client.delete(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_unsuccessful(self):
+        response = self.client.patch(self.url, self.data_error, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-#     def test_not_creator(self):
-#         self.client.force_authenticate(user=self.business_user)
-#         response = self.client.delete(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_not_authenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(self.url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-#     def test_not_found(self):
-#         self.client.force_authenticate(user=self.customer_user)
-#         response = self.client.delete(self.url_Error)
-#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_not_creator(self):
+        self.client.force_authenticate(user=self.business_user)
+        response = self.client.patch(self.url, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_not_found(self):
+        response = self.client.patch(self.url_Error, self.data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-# class SingleDetailOfferGetTest(OfferTestBase):
+class OfferDeleteTest(OfferTestBase):
 
-#     def setUp(self):
-#         self.url = reverse('offer-details', kwargs={'pk': 1})
-#         self.url_Error = reverse('offer-details', kwargs={'pk': 2})
-#         self.client.force_authenticate(user=self.customer_user)
-#         self.data = {
-#             "title": "Updated Grafikdesign-Paket",
-#             "details": [
-#                 {
-#                     "title": "Basic Design Updated",
-#                     "revisions": 3,
-#                     "delivery_time_in_days": 6,
-#                     "price": 120,
-#                     "features": [
-#                         "Logo Design",
-#                         "Flyer"
-#                     ],
-#                     "offer_type": "basic"
-#                 }
-#             ]
-#         }
-#         self.data_error = {
-#             "title": None,
-#         }
+    def setUp(self):
+        self.url = reverse('offer-detail', kwargs={'pk': 1})
+        self.url_Error = reverse('offer-detail', kwargs={'pk': 10})
+        self.client.force_authenticate(user=self.customer_user)
 
-#     def test_successful(self):
-#         response = self.client.get(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_successful(self):
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-#     def test_not_authenticated(self):
-#         self.client.force_authenticate(user=None)
-#         response = self.client.get(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_not_authenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-#     def test_not_found(self):
-#         self.client.force_authenticate(user=self.customer_user)
-#         response = self.client.get(self.url_Error)
-#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_not_creator(self):
+        self.client.force_authenticate(user=self.business_user)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_not_found(self):
+        self.client.force_authenticate(user=self.customer_user)
+        response = self.client.delete(self.url_Error)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class SingleDetailOfferGetTest(OfferTestBase):
+
+    def setUp(self):
+        self.url = reverse('offer-details', kwargs={'pk': 1})
+        self.url_Error = reverse('offer-details', kwargs={'pk': 10})
+        self.client.force_authenticate(user=self.customer_user)
+        self.data = {
+            "title": "Updated Grafikdesign-Paket",
+            "details": [
+                {
+                    "title": "Basic Design Updated",
+                    "revisions": 3,
+                    "delivery_time_in_days": 6,
+                    "price": 120,
+                    "features": [
+                        "Logo Design",
+                        "Flyer"
+                    ],
+                    "offer_type": "basic"
+                }
+            ]
+        }
+        self.data_error = {
+            "title": None,
+        }
+
+    def test_successful(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_not_authenticated(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_not_found(self):
+        self.client.force_authenticate(user=self.customer_user)
+        response = self.client.get(self.url_Error)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
