@@ -10,4 +10,4 @@ class IsCustomer(permissions.BasePermission):
 class IsBusiness(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.type == 'business-user'
+        return request.user.is_authenticated and request.user.type == 'business'

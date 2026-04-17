@@ -46,7 +46,7 @@ class ProfilePatchTest(APITestCase):
             username="exampleUsername2",
             email="example2@mail.de",
             password="examplePassword2",
-            type="business-user"
+            type="business"
         )
         self.data = {
             "first_name": "Max",

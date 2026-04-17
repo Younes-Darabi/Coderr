@@ -12,7 +12,7 @@ class OfferTestBase(APITestCase):
             username="exampleUsername",
             email="example@mail.de",
             password="examplePassword",
-            type="business-user"
+            type="business"
         )
         cls.customer_user = CustomUser.objects.create_user(
             username="exampleUsername2",

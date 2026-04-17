@@ -19,7 +19,7 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
 
 class BusinessListView(generics.ListAPIView):
 
-    queryset = CustomUser.objects.filter(type = 'business-user')
+    queryset = CustomUser.objects.filter(type = 'business')
     serializer_class = BusinessListSerializer
     permission_classes = [IsAuthenticated]
 

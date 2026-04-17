@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
 
     class UserType(models.TextChoices):
         CUSTOMER = "customer", "Customer"
-        BUSINESS_USER = "business-user", "Business-User"
+        BUSINESS = "business", "Business"
     
     type = models.CharField(max_length=20, choices=UserType.choices)
     file = models.FileField(upload_to='profile_files/', blank=True, null=True)
