@@ -7,6 +7,7 @@ from user_auth.models import CustomUser
 class Order(models.Model):
 
     class OrderStatus (models.TextChoices):
+        CANCELLED = "cancelled", "Cancelled"
         IN_PROGRESS = "in_progress", "In_Progress"
         COMPLETED = "completed", "Completed"
 
