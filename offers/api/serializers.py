@@ -7,7 +7,7 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfferDetail
-        fields = ['title', 'revisions',
+        fields = ['id', 'title', 'revisions',
                   'delivery_time_in_days', 'price', 'features', 'offer_type']
 
 
@@ -56,7 +56,7 @@ class OfferPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ['title', 'image', 'description', 'details']
+        fields = ['id', 'title', 'image', 'description', 'details']
 
     def create(self, validated_data):
 

@@ -162,7 +162,8 @@ REST_FRAMEWORK = {
     # Filter
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
-    ]
+    ],
+    'DATETIME_FORMAT': "%Y-%m-%dT%H:%M:%SZ",
 }
 
 AUTH_USER_MODEL = 'user_auth.CustomUser'
