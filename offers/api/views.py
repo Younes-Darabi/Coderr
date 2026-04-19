@@ -23,16 +23,22 @@ class OfferView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Offer.objects.all()
         
-        min_price = self.request.query_params.get('min_price', None)
-        max_delivery_time = self.request.query_params.get('max_delivery_time', None)
+        min_price = self.request.query_params.get('min_price')
+        max_delivery_time = self.request.query_params.get('max_delivery_time')
 
-        if min_price is not None:
-            min_price = float(min_price)
-            queryset = queryset.filter(details__price__lte=min_price)
+        if min_price:
+            try:
+                min_price = float(min_price)
+                queryset = queryset.filter(details__price__lte=min_price)
+            except ValueError:
+                pass
 
-        if max_delivery_time is not None:
-            max_delivery_time = int(max_delivery_time)
-            queryset = queryset.filter(details__delivery_time_in_days__lte=max_delivery_time)
+        if max_delivery_time:
+            try:
+                max_delivery_time = int(max_delivery_time)
+                queryset = queryset.filter(details__delivery_time_in_days__lte=max_delivery_time)
+            except ValueError:
+                pass
             
         return queryset
 
