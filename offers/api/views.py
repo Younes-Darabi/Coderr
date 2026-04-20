@@ -15,8 +15,7 @@ class OfferView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['creator_id']
     search_fields = ['title', 'description']
-    # ordering_fields = ['updated_at', 'min_price']
-    ordering_fields = ['updated_at']
+    ordering_fields = ['updated_at', 'min_price']
 
     pagination_class = OfferPagination
 
@@ -29,7 +28,7 @@ class OfferView(generics.ListCreateAPIView):
         if min_price:
             try:
                 min_price = float(min_price)
-                queryset = queryset.filter(details__price__lte=min_price)
+                queryset = queryset.filter(details__price__lte=min_price).distinct()
             except ValueError:
                 pass
 
