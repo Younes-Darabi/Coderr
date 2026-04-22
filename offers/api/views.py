@@ -1,8 +1,8 @@
-from django.db.models import Min, Max
+from django.db.models import Min
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
-from rest_framework import generics
+from rest_framework import generics, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import serializers
 
 from ..models import Offer, OfferDetail
 from .serializers import OfferGetSerializer, OfferPostSerializer, SingleGetOfferSerializer, SinglePatchOfferSerializer, SingleOfferDetailSerializer
@@ -22,22 +22,26 @@ class OfferView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Offer.objects.all()
         
-        min_price = self.request.query_params.get('min_price')
-        max_delivery_time = self.request.query_params.get('max_delivery_time')
+        min_price_param = self.request.query_params.get('min_price')
+        max_delivery_time_param = self.request.query_params.get('max_delivery_time')
 
-        if min_price:
+        if min_price_param:
             try:
-                min_price = float(min_price)
-                queryset = queryset.filter(details__price__lte=min_price).distinct()
-            except ValueError:
-                pass
+                min_price_param = float(min_price_param)
+                queryset = queryset.annotate(min_detail_price=Min('details__price'))
+                queryset = queryset.filter(min_detail_price__gte=min_price_param)
+                queryset = min(queryset.all())
 
-        if max_delivery_time:
-            try:
-                max_delivery_time = int(max_delivery_time)
-                queryset = queryset.filter(details__delivery_time_in_days__lte=max_delivery_time)
             except ValueError:
-                pass
+                raise serializers.ValidationError("You must enter a number for the minimum price filter.")
+
+        if max_delivery_time_param:
+            try:
+                max_delivery_time_param = int(max_delivery_time_param)
+                queryset = queryset.filter(details__delivery_time_in_days__lte=max_delivery_time_param).distinct()
+            except ValueError:
+                raise serializers.ValidationError("You must enter a number for the maximum delivery time filter.")
+
             
         return queryset
 

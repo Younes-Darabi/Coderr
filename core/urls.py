@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/profiles/', include('user_profile.api.urls_cb')),
     path('api/offers/', include('offers.api.urls')),
     path('api/offerdetails/', include('offers.api.urls_offerdetails')),
+    path('offerdetails/', include('offers.api.urls_offerdetails')),
     path('api/orders/', include('orders.api.urls')),
     path('api/order-count/', include('orders.api.urls_order-count')),
     path('api/completed-order-count/', include('orders.api.urls_completed-order-count')),
