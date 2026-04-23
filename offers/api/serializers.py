@@ -115,6 +115,11 @@ class SinglePatchOfferSerializer(serializers.ModelSerializer):
         for data in details_data:
             offer_type = data.get('offer_type')
 
+            if offer_type is None:
+                raise serializers.ValidationError({
+                    "details": "Each detail must include 'offer_type'."
+                })
+
             detail_obj, created = OfferDetail.objects.update_or_create(
                 offer=instance,
                 offer_type=offer_type,

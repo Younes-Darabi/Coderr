@@ -20,7 +20,7 @@ class ReviewView(generics.ListCreateAPIView):
     serializer_class = ReviewSerializer
 
     def get_permissions(self):
-        # GET is allowed for all authenticated users; POST only for customers.
+        """ GET is allowed for all authenticated users; POST only for customers. """
         if self.request.method == 'GET':
             return [IsAuthenticated()]
         return [IsAuthenticated(), IsCustomer()]

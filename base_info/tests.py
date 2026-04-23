@@ -15,9 +15,9 @@ class BaseInfoGetTest(APITestCase):
         self.url = reverse('base-info')
         response = self.client.get(self.url)
 
-        # Should return 200 OK regardless of authentication
+        """ Should return 200 OK regardless of authentication """
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Verify the structure of the returned data
+        """ Verify the structure of the returned data """
         self.assertIn('review_count', response.data)
         self.assertIn('average_rating', response.data)

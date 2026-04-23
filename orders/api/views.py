@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
+from rest_framework import generics, status, serializers
 from rest_framework.views import Response, APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
@@ -19,7 +19,7 @@ class OrderView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
 
     def get_permissions(self):
-        # Only authenticated customers can place new orders
+        """ Only authenticated customers can place new orders """
         if self.request.method == 'GET':
             return [IsAuthenticated()]
         return [IsAuthenticated(), IsCustomer()]
@@ -31,24 +31,29 @@ class OrderView(generics.ListCreateAPIView):
         """
         offer_detail_id = request.data.get('offer_detail_id')
 
-        if not offer_detail_id:
-            return Response({"detail": "The fields are incomplete."}, status=status.HTTP_400_BAD_REQUEST)
+        if offer_detail_id:
+            try:
+                offer_detail = get_object_or_404(
+                    OfferDetail, id=offer_detail_id)
 
-        offer_detail = get_object_or_404(OfferDetail, id=offer_detail_id)
+                """ Prepare data for the serializer """
+                data = {
+                    "customer_user": request.user.id,
+                    "business_user": offer_detail.offer.creator.id,
+                    "offer_detail":  offer_detail.id
+                }
+                serializer = OrderSerializer(data=data)
 
-        # Prepare data for the serializer
-        data = {
-            "customer_user": request.user.id,
-            "business_user": offer_detail.offer.creator.id,
-            "offer_detail":  offer_detail.id
-        }
-        serializer = OrderSerializer(data=data)
+                if serializer.is_valid():
+                    order = serializer.save()
+                    return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
-        if serializer.is_valid():
-            order = serializer.save()
-            return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError:
+                raise serializers.ValidationError(
+                    "You must enter a offer detail id!")
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "The fields are incomplete."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -60,7 +65,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
 
     def get_permissions(self):
-        # Business users can update order status (e.g., mark as completed)
+        """ Business users can update order status (e.g., mark as completed) """
         if self.request.method == 'PATCH':
             return [IsAuthenticated(), IsBusiness()]
         return [IsAuthenticated(), IsAdminUser()]

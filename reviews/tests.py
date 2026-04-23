@@ -14,28 +14,28 @@ class OfferTestBase(APITestCase):
     """
     @classmethod
     def setUpTestData(cls):
-        # Business user to be reviewed
+        """ Business user to be reviewed """
         cls.business_user = CustomUser.objects.create_user(
             username="exampleUsername",
             email="example@mail.de",
             password="examplePassword",
             type="business"
         )
-        # Customer 1: Already has a review
+        """ Customer 1: Already has a review """
         cls.customer_user = CustomUser.objects.create_user(
             username="exampleUsername2",
             email="example2@mail.de",
             password="examplePassword2",
             type="customer"
         )
-        # Customer 2: New reviewer
+        """ Customer 2: New reviewer """
         cls.customer_user_2 = CustomUser.objects.create_user(
             username="exampleUsername4",
             email="example4@mail.de",
             password="examplePassword4",
             type="customer"
         )
-        # Initial review for testing retrieval and updates
+        """ Initial review for testing retrieval and updates """
         cls.reviews = Review.objects.create(
             reviewer=cls.customer_user,
             business_user=cls.business_user,

@@ -15,7 +15,7 @@ class Order(models.Model):
         COMPLETED = "completed", "Completed"
 
     offer_detail = models.ForeignKey(OfferDetail, on_delete=models.CASCADE)
-    # Distinguishes between the buyer (customer) and the seller (business)
+    """ Distinguishes between the buyer (customer) and the seller (business) """
     customer_user = models.ForeignKey(
         CustomUser, related_name='user_as_customer', on_delete=models.CASCADE)
     business_user = models.ForeignKey(

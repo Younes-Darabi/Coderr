@@ -13,7 +13,7 @@ class OfferTestBase(APITestCase):
     """
     @classmethod
     def setUpTestData(cls):
-        # Sample data for creating a valid offer with multiple tiers (Basic, Standard, Premium)
+        """ Sample data for creating a valid offer with multiple tiers (Basic, Standard, Premium) """
         cls.offer_data = {
             "title": "Grafikdesign-Paket",
             "image": None,
@@ -51,7 +51,7 @@ class OfferTestBase(APITestCase):
             "title": "Grafikdesign-Paket",
         }
 
-        # Test users with different roles
+        """ Test users with different roles """
         cls.business_user = CustomUser.objects.create_user(
             username="exampleUsername",
             email="example@mail.de",
@@ -65,7 +65,7 @@ class OfferTestBase(APITestCase):
             type="customer"
         )
 
-        # Filtering and ordering parameters for GET requests
+        """ Filtering and ordering parameters for GET requests """
         cls.filter = {
             'creator_id': 1,
             'min_price': 100,
@@ -78,7 +78,7 @@ class OfferTestBase(APITestCase):
             'creator_id': 'A',
         }
 
-        # Create an initial offer in the database for retrieval/update tests
+        """ Create an initial offer in the database for retrieval/update tests """
         cls.offer = Offer.objects.create(
             title="Grafikdesign-Paket",
             description="Ein umfassendes Grafikdesign-Paket für Unternehmen.",
@@ -191,7 +191,7 @@ class OfferDetailPatchTest(OfferTestBase):
         self.url = reverse('offer-detail', kwargs={'pk': 1})
         self.url_Error = reverse('offer-detail', kwargs={'pk': 10})
         self.client.force_authenticate(
-            user=self.customer_user)  # Creator of 'offer'
+            user=self.customer_user)  # Creator of 'offer' 
         self.data = {
             "title": "Updated Grafikdesign-Paket",
             "details": [

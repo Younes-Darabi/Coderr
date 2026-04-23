@@ -19,7 +19,7 @@ class RegistrationTest(APITestCase):
         """
         self.url = reverse('register')
 
-        # Valid data for successful registration
+        """ Valid data for successful registration """
         self.valid_data = {
             "username": "exampleUsername",
             "email": "example@mail.de",
@@ -28,7 +28,7 @@ class RegistrationTest(APITestCase):
             "type": "customer"
         }
 
-        # Invalid data missing the required 'type' field
+        """ Invalid data missing the required 'type' field """
         self.invalid_data = {
             "username": "exampleUsername",
             "email": "example@mail.de",
@@ -36,7 +36,7 @@ class RegistrationTest(APITestCase):
             "repeated_password": "examplePassword",
         }
 
-        # Invalid data where password and repeated_password do not match
+        """ Invalid data where password and repeated_password do not match """
         self.invalid_data_mismatched_password = {
             "username": "exampleUsername",
             "email": "example@mail.de",
@@ -84,7 +84,7 @@ class LoginTest(APITestCase):
         """
         self.url = reverse('login')
 
-        # Pre-create a user to test authentication
+        """ Pre-create a user to test authentication """
         CustomUser.objects.create_user(
             username="exampleUsername",
             email="example@mail.de",
@@ -92,19 +92,19 @@ class LoginTest(APITestCase):
             type="customer"
         )
 
-        # Credentials for successful login
+        """ Credentials for successful login """
         self.valid_data = {
             "username": "exampleUsername",
             "password": "examplePassword",
         }
 
-        # Credentials missing the password field
+        """ Credentials missing the password field """
         self.invalid_data = {
             "username": "exampleUsername",
             "email": "example@mail.de",
         }
 
-        # Credentials with an incorrect password
+        """ Credentials with an incorrect password """
         self.invalid_data_password = {
             "username": "exampleUsername",
             "password": "123456789",

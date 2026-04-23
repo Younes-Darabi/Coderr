@@ -12,7 +12,7 @@ class OrderSerializer(serializers.ModelSerializer):
     offer_detail = serializers.PrimaryKeyRelatedField(
         queryset=OfferDetail.objects.all(), write_only=True)
 
-    # Read-only fields derived from the selected offer tier
+    """ Read-only fields derived from the selected offer tier """
     title = serializers.CharField(source='offer_detail.title', read_only=True)
     revisions = serializers.IntegerField(
         source='offer_detail.revisions', read_only=True)

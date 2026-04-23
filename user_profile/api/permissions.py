@@ -8,6 +8,6 @@ class IsOwner(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
-        # Read permissions are handled by the view,
-        # this specifically checks if the user is the 'owner' of the profile
+        """ Read permissions are handled by the view,
+            this specifically checks if the user is the 'owner' of the profile"""
         return obj.pk == request.user.pk
