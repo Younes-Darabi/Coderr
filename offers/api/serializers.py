@@ -3,6 +3,7 @@ from rest_framework import serializers
 from user_auth.models import CustomUser
 from ..models import Offer, OfferDetail
 
+
 class OfferDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -21,7 +22,7 @@ class OfferDetailHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_url(self, obj):
         return f"/offerdetails/{obj.id}/"
-        
+
 
 class UserDetailsSerializer(serializers.ModelSerializer):
 
@@ -32,16 +33,17 @@ class UserDetailsSerializer(serializers.ModelSerializer):
 
 class OfferGetSerializer(serializers.ModelSerializer):
 
-    user = serializers.IntegerField(source = 'creator_id', read_only = True)
+    user = serializers.IntegerField(source='creator_id', read_only=True)
     details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
-    user_details = UserDetailsSerializer(source='creator',read_only = True)
+    user_details = UserDetailsSerializer(source='creator', read_only=True)
 
     class Meta:
         model = Offer
-        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
-    
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
+                  'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+
     def get_min_price(self, obj):
         return min(obj.details.all().values_list('price', flat=True))
 
@@ -61,31 +63,32 @@ class OfferPostSerializer(serializers.ModelSerializer):
 
         details_data = validated_data.pop('details')
         user = self.context['request'].user
-        
+
         offer = Offer.objects.create(creator=user, **validated_data)
 
         for detail_data in details_data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
-    
+
 
 class SingleGetOfferSerializer(serializers.ModelSerializer):
-    
-    user = serializers.IntegerField(source = 'creator_id', read_only = True)
+
+    user = serializers.IntegerField(source='creator_id', read_only=True)
     details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
-        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time']
-    
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
+                  'updated_at', 'details', 'min_price', 'min_delivery_time']
+
     def get_min_price(self, obj):
         return min(obj.details.all().values_list('price', flat=True))
 
     def get_min_delivery_time(self, obj):
         return min(obj.details.all().values_list('delivery_time_in_days', flat=True))
-    
+
 
 class SingleOfferDetailSerializer(serializers.ModelSerializer):
 
@@ -93,15 +96,15 @@ class SingleOfferDetailSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ['id', 'title', 'revisions',
                   'delivery_time_in_days', 'price', 'features', 'offer_type']
-        
+
 
 class SinglePatchOfferSerializer(serializers.ModelSerializer):
-    
+
     details = SingleOfferDetailSerializer(many=True)
 
     class Meta:
         model = Offer
-        fields = ['id', 'title', 'image', 'description','details']
+        fields = ['id', 'title', 'image', 'description', 'details']
 
     def update(self, instance, validated_data):
         for key, value in validated_data.items():
@@ -109,13 +112,10 @@ class SinglePatchOfferSerializer(serializers.ModelSerializer):
                 setattr(instance, key, value)
         instance.save()
 
-        for detail_data in validated_data.get('details', []):
+        for d in validated_data.get('details', []):
             detail, _ = OfferDetail.objects.get_or_create(
-                offer=instance,
-                offer_type=detail_data['offer_type'],
-                defaults=detail_data
-            )
-            for k, v in detail_data.items():
+                offer=instance, offer_type=d['offer_type'], defaults=d)
+            for k, v in d.items():
                 setattr(detail, k, v)
             detail.save()
 

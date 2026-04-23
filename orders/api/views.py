@@ -57,22 +57,24 @@ class OrderCountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        
+
         business_user = get_object_or_404(CustomUser, id=pk)
-        
-        order_count = Order.objects.filter(business_user=business_user, status='in_progress').count()
+
+        order_count = Order.objects.filter(
+            business_user=business_user, status='in_progress').count()
 
         return Response({"order_count": order_count}, status=status.HTTP_200_OK)
-    
+
 
 class CompletedOrderCountView(APIView):
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        
+
         business_user = get_object_or_404(CustomUser, id=pk)
-        
-        completed_order_count = Order.objects.filter(business_user=business_user, status='completed').count()
+
+        completed_order_count = Order.objects.filter(
+            business_user=business_user, status='completed').count()
 
         return Response({"completed_order_count": completed_order_count}, status=status.HTTP_200_OK)

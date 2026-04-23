@@ -15,17 +15,17 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
         if self.request.method == 'PATCH':
             return [IsAuthenticated(), IsOwner()]
         return [IsAuthenticated()]
-    
+
 
 class BusinessListView(generics.ListAPIView):
 
-    queryset = CustomUser.objects.filter(type = 'business')
+    queryset = CustomUser.objects.filter(type='business')
     serializer_class = BusinessListSerializer
     permission_classes = [IsAuthenticated]
 
 
 class CustomerListView(generics.ListAPIView):
 
-    queryset = CustomUser.objects.filter(type = 'customer')
+    queryset = CustomUser.objects.filter(type='customer')
     serializer_class = CustomerListSerializer
     permission_classes = [IsAuthenticated]

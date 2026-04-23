@@ -94,6 +94,7 @@ class OfferTestBase(APITestCase):
             offer_type="basic"
         )
 
+
 class OfferPostTest(OfferTestBase):
 
     def setUp(self):
@@ -105,7 +106,8 @@ class OfferPostTest(OfferTestBase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_unsuccessful(self):
-        response = self.client.post(self.url, self.offer_data_error, format='json')
+        response = self.client.post(
+            self.url, self.offer_data_error, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_not_authenticated(self):

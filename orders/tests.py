@@ -47,6 +47,7 @@ class OfferTestBase(APITestCase):
             business_user=cls.business_user
         )
 
+
 class OrderPostTest(OfferTestBase):
 
     def setUp(self):
@@ -83,7 +84,8 @@ class OrderPostTest(OfferTestBase):
 
     def test_not_founf(self):
         self.client.force_authenticate(user=self.customer_user)
-        response = self.client.post(self.url, self.data_not_found, format='json')
+        response = self.client.post(
+            self.url, self.data_not_found, format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 

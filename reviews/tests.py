@@ -27,10 +27,10 @@ class OfferTestBase(APITestCase):
             type="customer"
         )
         cls.reviews = Review.objects.create(
-            reviewer = cls.customer_user,
-            business_user = cls.business_user,
-            rating = '4',
-            description = 'Noch besser als erwartet!'
+            reviewer=cls.customer_user,
+            business_user=cls.business_user,
+            rating='4',
+            description='Noch besser als erwartet!'
         )
 
 
