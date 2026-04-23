@@ -30,7 +30,6 @@ class BaseInfoView(APIView):
 
         data = {
             "review_count": review_count,
-            """ Handle None if no reviews exist """
             "average_rating": average_rating if average_rating else 0,
             "business_profile_count": business_profile_count,
             "offer_count": offer_count
