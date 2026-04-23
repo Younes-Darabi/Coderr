@@ -4,7 +4,9 @@ from user_auth.models import CustomUser
 
 
 class Review(models.Model):
-
+    """
+    Model representing a rating and feedback left by a customer for a business.
+    """
     reviewer = models.ForeignKey(
         CustomUser, related_name='reviewer_as_customer', on_delete=models.CASCADE)
     business_user = models.ForeignKey(

@@ -4,7 +4,9 @@ from user_auth.models import CustomUser
 
 
 class Offer(models.Model):
-
+    """
+    Represents a main service offer created by a business user.
+    """
     title = models.CharField(max_length=100)
     image = models.FileField(upload_to='offer_images/', blank=True, null=True)
     description = models.TextField()
@@ -18,8 +20,10 @@ class Offer(models.Model):
 
 
 class OfferDetail(models.Model):
-
-    class OfferType (models.TextChoices):
+    """
+    Represents specific pricing tiers (Basic, Standard, Premium) for an Offer.
+    """
+    class OfferType(models.TextChoices):
         BASIC = "basic", "Basic"
         STANDARD = "standard", "Standard"
         PREMIUM = "premium", "Premium"

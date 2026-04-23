@@ -5,7 +5,7 @@ from ..models import Offer, OfferDetail
 
 
 class OfferDetailSerializer(serializers.ModelSerializer):
-
+    """Basic serializer for offer details."""
     class Meta:
         model = OfferDetail
         fields = ['id', 'title', 'revisions',
@@ -13,7 +13,7 @@ class OfferDetailSerializer(serializers.ModelSerializer):
 
 
 class OfferDetailHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
-
+    """Serializer that provides custom URLs for offer details."""
     url = serializers.SerializerMethodField()
 
     class Meta:
@@ -25,14 +25,14 @@ class OfferDetailHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
-
+    """Serializer for basic user information attached to an offer."""
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'username']
 
 
 class OfferGetSerializer(serializers.ModelSerializer):
-
+    """Serializer for listing offers with aggregated data like min_price."""
     user = serializers.IntegerField(source='creator_id', read_only=True)
     details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
@@ -52,7 +52,7 @@ class OfferGetSerializer(serializers.ModelSerializer):
 
 
 class OfferPostSerializer(serializers.ModelSerializer):
-
+    """Serializer for creating an offer along with its multiple details."""
     details = OfferDetailSerializer(many=True, required=True)
 
     class Meta:
@@ -60,19 +60,16 @@ class OfferPostSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'description', 'details']
 
     def create(self, validated_data):
-
         details_data = validated_data.pop('details')
         user = self.context['request'].user
-
         offer = Offer.objects.create(creator=user, **validated_data)
-
         for detail_data in details_data:
             OfferDetail.objects.create(offer=offer, **detail_data)
         return offer
 
 
 class SingleGetOfferSerializer(serializers.ModelSerializer):
-
+    """Serializer for detailed retrieval of a single offer."""
     user = serializers.IntegerField(source='creator_id', read_only=True)
     details = OfferDetailHyperlinkedSerializer(many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
@@ -91,7 +88,6 @@ class SingleGetOfferSerializer(serializers.ModelSerializer):
 
 
 class SingleOfferDetailSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = OfferDetail
         fields = ['id', 'title', 'revisions',
@@ -99,7 +95,7 @@ class SingleOfferDetailSerializer(serializers.ModelSerializer):
 
 
 class SinglePatchOfferSerializer(serializers.ModelSerializer):
-
+    """Handles updating an offer and its corresponding details (tiers)."""
     details = SingleOfferDetailSerializer(many=True)
 
     class Meta:
@@ -107,16 +103,22 @@ class SinglePatchOfferSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'description', 'details']
 
     def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            if key != 'details':
-                setattr(instance, key, value)
+
+        details_data = validated_data.pop('details', [])
+
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get(
+            'description', instance.description)
+        instance.image = validated_data.get('image', instance.image)
         instance.save()
 
-        for d in validated_data.get('details', []):
-            detail, _ = OfferDetail.objects.get_or_create(
-                offer=instance, offer_type=d['offer_type'], defaults=d)
-            for k, v in d.items():
-                setattr(detail, k, v)
-            detail.save()
+        for data in details_data:
+            offer_type = data.get('offer_type')
+
+            detail_obj, created = OfferDetail.objects.update_or_create(
+                offer=instance,
+                offer_type=offer_type,
+                defaults=data
+            )
 
         return instance

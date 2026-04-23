@@ -1,12 +1,18 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
+
 from offers.models import Offer, OfferDetail
 from user_auth.models import CustomUser
 from orders.models import Order
 
 
 class OfferTestBase(APITestCase):
+    """
+    Base test class for Orders. 
+    Sets up a business user, a customer, and a superuser, 
+    along with an initial offer and an order for testing purposes.
+    """
     @classmethod
     def setUpTestData(cls):
         cls.business_user = CustomUser.objects.create_user(
@@ -49,26 +55,24 @@ class OfferTestBase(APITestCase):
 
 
 class OrderPostTest(OfferTestBase):
+    """
+    Tests creating a new order (POST). 
+    Ensures only customers can place orders and handles validation errors.
+    """
 
     def setUp(self):
         self.url = reverse('order')
         self.client.force_authenticate(user=self.customer_user)
-        self.data = {
-            "offer_detail_id": 1
-        }
-        self.data_error = {
-            "aaaaaaaa": 1
-        }
-
-        self.data_not_found = {
-            "offer_detail_id": 10
-        }
+        self.data = {"offer_detail_id": 1}
+        self.data_error = {"aaaaaaaa": 1}
+        self.data_not_found = {"offer_detail_id": 10}
 
     def test_successful(self):
         response = self.client.post(self.url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_unsuccessful(self):
+        """Fails when invalid field names are provided."""
         response = self.client.post(self.url, self.data_error, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -78,11 +82,13 @@ class OrderPostTest(OfferTestBase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_customer_user(self):
+        """Ensures business users cannot place orders on offers."""
         self.client.force_authenticate(user=self.business_user)
         response = self.client.post(self.url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_not_founf(self):
+        """Fails when the offer_detail_id does not exist."""
         self.client.force_authenticate(user=self.customer_user)
         response = self.client.post(
             self.url, self.data_not_found, format='json')
@@ -90,6 +96,9 @@ class OrderPostTest(OfferTestBase):
 
 
 class OrderGetTest(OfferTestBase):
+    """
+    Tests retrieving the list of orders.
+    """
 
     def setUp(self):
         self.url = reverse('order')
@@ -106,17 +115,17 @@ class OrderGetTest(OfferTestBase):
 
 
 class orderDetailPatchTest(OfferTestBase):
+    """
+    Tests updating an order status (PATCH).
+    Ensures business users can manage order statuses.
+    """
 
     def setUp(self):
         self.url = reverse('order-detail', kwargs={'pk': 1})
         self.url_Error = reverse('order-detail', kwargs={'pk': 10})
         self.client.force_authenticate(user=self.business_user)
-        self.data = {
-            "status": "completed"
-        }
-        self.data_error = {
-            "status": None,
-        }
+        self.data = {"status": "completed"}
+        self.data_error = {"status": None}
 
     def test_successful(self):
         response = self.client.patch(self.url, self.data, format='json')
@@ -132,6 +141,7 @@ class orderDetailPatchTest(OfferTestBase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_creator(self):
+        """Customers should not be allowed to change order status via PATCH."""
         self.client.force_authenticate(user=self.customer_user)
         response = self.client.patch(self.url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -142,6 +152,10 @@ class orderDetailPatchTest(OfferTestBase):
 
 
 class OrderDeleteTest(OfferTestBase):
+    """
+    Tests order deletion (DELETE).
+    Restricted to superusers/admins based on view permissions.
+    """
 
     def setUp(self):
         self.url = reverse('order-detail', kwargs={'pk': 1})
@@ -158,6 +172,7 @@ class OrderDeleteTest(OfferTestBase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_superuser(self):
+        """Regular customers or business users cannot delete orders."""
         self.client.force_authenticate(user=self.customer_user)
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -169,6 +184,9 @@ class OrderDeleteTest(OfferTestBase):
 
 
 class OrderCountGetTest(OfferTestBase):
+    """
+    Tests the endpoint for counting active (in_progress) orders.
+    """
 
     def setUp(self):
         self.url = reverse('order-count', kwargs={'pk': 1})
@@ -185,12 +203,14 @@ class OrderCountGetTest(OfferTestBase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_found(self):
-        self.client.force_authenticate(user=self.customer_user)
         response = self.client.get(self.url_Error)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class CompletedOrderCountGetTest(OfferTestBase):
+    """
+    Tests the endpoint for counting completed orders for a business.
+    """
 
     def setUp(self):
         self.url = reverse('completed-order-count', kwargs={'pk': 1})
@@ -207,6 +227,5 @@ class CompletedOrderCountGetTest(OfferTestBase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_not_found(self):
-        self.client.force_authenticate(user=self.customer_user)
         response = self.client.get(self.url_Error)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
