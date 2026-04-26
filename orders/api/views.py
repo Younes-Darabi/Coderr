@@ -50,8 +50,7 @@ class OrderView(generics.ListCreateAPIView):
 
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except ValueError:
-                raise serializers.ValidationError(
-                    "You must enter a offer detail id!")
+                raise serializers.ValidationError({"detail": "You must enter a offer detail id!"})
 
         return Response({"detail": "The fields are incomplete."}, status=status.HTTP_400_BAD_REQUEST)
 
