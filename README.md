@@ -39,7 +39,7 @@ Coderr is a powerful **Django REST Framework** backend for a freelance marketpla
 
 ## 🛠 Tech Stack
 - **Framework:** Django + Django REST Framework
-- **Database:** SQLite (Development) / PostgreSQL (Production)
+- **Database:** SQLite
 - **Authentication:** DRF Token Authentication
 - **Pagination:** PageNumberPagination
 
